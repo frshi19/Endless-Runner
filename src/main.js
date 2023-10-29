@@ -7,6 +7,15 @@
 
 let config = {
     type: Phaser.CANVAS,
+    render: {
+        pixelArt: true
+    },
+    physics: {
+        default: 'arcade',
+        arcade: {
+            debug: true
+        }
+    },
     width: 1280,
     height: 720,
     scale: {

@@ -38,7 +38,7 @@ class Play extends Phaser.Scene {
         // Lightning effect
         this.anims.create({
             key: 'flash',
-            frameRate: 20,
+            frameRate: 12,
             repeat: 0,
             frames: this.anims.generateFrameNumbers('lightning', {
                 start: 0,

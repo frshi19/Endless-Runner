@@ -94,6 +94,7 @@ class Play extends Phaser.Scene {
         // enemies
         this.cross = this.physics.add.sprite(game.config.width + 150, game.config.height/2, 'cross').setScale(7).setOrigin(0.5);
         this.cross.body.setSize(16,9)
+        this.cross.setImmovable(true)
 
 
 
@@ -119,11 +120,37 @@ class Play extends Phaser.Scene {
             loop: true
         });
 
-        // add blood at 20 seconds
+        // add garlic at 20 seconds
+        this.garlic = this.physics.add.sprite( game.config.width + 100, game.config.height/2, 'garlic').setOrigin(0.5).setScale(3)
+
+        this.time.delayedCall(20000, () => {
+            this.garlic.setVelocity(-550, 0)
+        }, null, this);
+
+        this.anims.create({
+            key: 'garlic',
+            frameRate: 1,
+            repeat: -1,
+            frames: this.anims.generateFrameNumbers('garlic', {
+                start: 0,
+                end: 9
+            })
+        })
+        this.garlic.anims.play('garlic', true)
+        this.garlic.setImmovable(true)
+        
+
+        // add blood every 30 seconds
         this.blood = this.physics.add.sprite(game.config.width + 150, game.config.height/2, 'blood').setScale(5).setOrigin(0.5);
         this.blood.body.setSize(16,9);
+        this.time.delayedCall(2000, () => {
+            this.blood.x = game.config.width + this.blood.width * 5
+            this.blood.y = Phaser.Math.Between(this.blood.height * 5 * 2, game.config.height - this.blood.height * 5)
+            this.blood.body.velocity.x = speed
+        }, null, this);
+        
         this.time.addEvent({
-            delay: 5000, 
+            delay: 30000, 
             callback: () => {
                 if(!this.gameOver){
                     this.blood.x = game.config.width + this.blood.width * 5
@@ -173,6 +200,21 @@ class Play extends Phaser.Scene {
             
         })
 
+        this.physics.add.collider(this.player, this.garlic, (player, garlic)=> {
+            if (this.bloodflag){
+                this.bloodflag = false
+                garlic.x = -69
+            }else{
+                player.destroy()
+                garlic.destroy()
+                this.gameOver = true
+                this.add.text(game.config.width/2, game.config.height/2 - 72, 'GAME OVER', gameOverConfig).setOrigin(0.5);
+                this.add.text(game.config.width/2, game.config.height/2, 'Time survived: ' + this.timer/1000 + ' seconds', gameOverConfig).setOrigin(0.5);
+                this.add.text(game.config.width/2, game.config.height/2 + 72, 'Press (R) to Restart or (ESC) for Menu', gameOverConfig).setOrigin(0.5);
+            }
+            
+        })
+
         
         this.bloodshield =  this.add.sprite(game.config.width + 150, game.config.height/2, 'bloodshield').setScale(5).setOrigin(0.5);
         this.physics.add.collider(this.player, this.blood, (player, blood)=> {
@@ -186,6 +228,22 @@ class Play extends Phaser.Scene {
     update(){
         
         if(!this.gameOver){
+            // garlic manager
+            if (this.garlic.anims.currentFrame.textureFrame == 0){
+                this.garlic.body.setCircle(12, 20, 22)
+            }else if (this.garlic.anims.currentFrame.textureFrame == 1){
+                this.garlic.body.setCircle(16, 16, 16)
+            }else if(this.garlic.anims.currentFrame.textureFrame == 2){
+                this.garlic.body.setCircle(24, 8, 8 )
+            } else if (this.garlic.anims.currentFrame.textureFrame == 3){
+                this.garlic.body.setCircle(32, 0, 0)
+            } else if(this.garlic.anims.currentFrame.textureFrame == 4){
+                this.garlic.body.setCircle(24, 8, 8 )
+            }else if (this.garlic.anims.currentFrame.textureFrame == 5){
+                this.garlic.body.setCircle(16, 16, 16)
+            }else if (this.garlic.anims.currentFrame.textureFrame == 6){
+                this.garlic.body.setCircle(12, 20, 22)
+            }
             // blood shield manager
             if (this.bloodflag){
                 this.bloodshield.x = this.player.x
@@ -223,6 +281,12 @@ class Play extends Phaser.Scene {
             if (this.cross.x <= 0 - this.cross.width){
                 this.cross.x = game.config.width + this.cross.width * 7
                 this.cross.y = Phaser.Math.Between(game.config.height / 3 + this.cross.height * 7 , game.config.height - this.cross.height * 7)
+            }
+            // garlic
+            // warp garlic from left to right
+            if (this.garlic.x <= 0 - this.garlic.width){
+                this.garlic.x = game.config.width + this.garlic.width * 3
+                this.garlic.y = Phaser.Math.Between(this.garlic.height * 3 , game.config.height - this.garlic.height * 3)
             }
             // blood
             if (this.blood.x <= 0 - this.blood.width){

@@ -27,7 +27,7 @@ let config = {
 let game = new Phaser.Game(config);
 
 // reserve keyboard vars
-let keySPACE
+let keySPACE, keyR, keyESC
 
 // speed
 let speed = -500

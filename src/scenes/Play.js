@@ -78,6 +78,8 @@ class Play extends Phaser.Scene {
         });
 
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+        keyESC = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
 
         // increase difficulty
         this.time.addEvent({
@@ -95,12 +97,14 @@ class Play extends Phaser.Scene {
         let gameOverConfig = {
             fontFamily: 'consolas',
             fontSize: '48px',
-            backgroundColor: '#F3B141',
-            color: '#843605',
+            backgroundColor: '#FFFFFF',
+            color: '#000000',
             align: 'center',
             padding: {
                 top: 5,
                 bottom: 5,
+                left: 5,
+                right: 5
             },
         }
 
@@ -109,8 +113,8 @@ class Play extends Phaser.Scene {
             player.destroy()
             cross.destroy()
             this.gameOver = true
-            //this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', gameOverConfig).setOrigin(0.5);
-            //this.add.text(game.config.width/2, game.config.height/2 + 72, 'Press (R) to Restart or (ESC) for Menu', gameOverConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', gameOverConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2 + 72, 'Press (R) to Restart or (ESC) for Menu', gameOverConfig).setOrigin(0.5);
         })
     }
 
@@ -137,6 +141,21 @@ class Play extends Phaser.Scene {
             if (this.cross.x <= 0 - this.cross.width){
                 this.cross.x = game.config.width + this.cross.width / 2
                 this.cross.y = Phaser.Math.Between(this.cross.height / 2 , game.config.height - this.cross.height / 2)
+            }
+        }else{
+            if (Phaser.Input.Keyboard.JustDown(keyR)){
+                this.anims.remove('walk');
+                this.anims.remove('fly');
+                this.anims.remove('flash');
+                this.textures.remove('vampire 0.aseprite')
+                this.scene.restart();
+            }
+            else if (Phaser.Input.Keyboard.JustDown(keyESC)){
+                this.anims.remove('walk');
+                this.anims.remove('fly');
+                this.anims.remove('flash');
+                this.textures.remove('vampire 0.aseprite')
+                this.scene.start('menuScene');
             }
         }
         

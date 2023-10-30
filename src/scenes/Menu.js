@@ -20,7 +20,6 @@ class Menu extends Phaser.Scene {
                 left: 5,
                 right: 5
             },
-            fixedWidth: 0
         }
 
         // show menu text

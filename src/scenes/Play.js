@@ -32,7 +32,20 @@ class Play extends Phaser.Scene {
                 suffix: '.aseprite'
             })
         })
+        this.anims.create({
+            key: 'fly',
+            frameRate: 5,
+            repeat: -1,
+            frames: this.anims.generateFrameNames('vampire', {
+                prefix: 'vampire ',
+                start: 4,
+                end: 7,
+                suffix: '.aseprite'
+            })
+        })
         this.player.anims.play('walk', true)
+        this.player.setGravityY(2000)
+        this.player.setCollideWorldBounds(true)
 
 
         // Lightning effect
@@ -53,9 +66,25 @@ class Play extends Phaser.Scene {
             callbackScope:this,
             loop: true
         });
+
+        keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     }
 
     update(){
         this.background.tilePositionX += 2;
+
+
+        // jump
+        if (Phaser.Input.Keyboard.DownDuration(keySPACE, 1000)){
+            this.player.body.velocity.y = -650
+        }
+        // player transform
+        if (this.player.y < this.game.config.height- this.game.config.height/4){
+            this.player.anims.play('fly', true)
+            this.player.body.setSize(16,16)
+        }else{
+            this.player.anims.play('walk', true)
+            this.player.body.setSize(16,32)
+        }
     }
 }

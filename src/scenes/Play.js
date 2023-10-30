@@ -56,7 +56,7 @@ class Play extends Phaser.Scene {
         });
         
         // player 
-        this.player = this.physics.add.sprite(game.config.width / 5, game.config.height - this.game.config.height / 4, 'vampire', 'vampire 0.aseprite').setScale(7).setOrigin(0.5)
+        this.player = this.physics.add.sprite(game.config.width / 5, game.config.height - 112, 'vampire', 'vampire 0.aseprite').setScale(7).setOrigin(0.5)
         this.textures.addSpriteSheetFromAtlas('vampire 0.aseprite', {frameHeight: 32, frameWidth: 16, atlas: 'vampire', frame: 'vampire 0.aseprite'})
         this.anims.create({
             key: 'walk',
@@ -85,11 +85,12 @@ class Play extends Phaser.Scene {
         this.player.setCollideWorldBounds(true)
 
         // enemies
-        this.cross = this.physics.add.sprite(game.config.width, game.config.height/2, 'cross').setScale(7);
+        this.cross = this.physics.add.sprite(game.config.width + 150, game.config.height/2, 'cross').setScale(7).setOrigin(0.5);
+        this.cross.body.setSize(16,9)
 
 
 
-        // Lightning effect
+        // Increase difficulty
         this.anims.create({
             key: 'flash',
             frameRate: 12,
@@ -103,6 +104,7 @@ class Play extends Phaser.Scene {
             delay: 10000, 
             callback: () => {
                 this.lightning.anims.play('flash', false)
+                speed -= 75
             },
             callbackScope:this,
             loop: true
@@ -111,18 +113,6 @@ class Play extends Phaser.Scene {
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
         keyESC = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
-
-        // increase difficulty
-        this.time.addEvent({
-            delay: 5000, 
-            callback: () => {
-                if(!this.gameOver){
-                    speed -= 50;
-                }
-            },
-            callbackScope:this,
-            loop: true
-        });
 
         // score config
         let gameOverConfig = {
@@ -153,9 +143,18 @@ class Play extends Phaser.Scene {
     update(){
         
         if(!this.gameOver){
+            // jump checker
+            if (this.player.y >= this.game.config.height - 112){
+                this.DoubleJump = 0;
+            }
             // jump
-            if (Phaser.Input.Keyboard.DownDuration(keySPACE, 1000)){
+            if (Phaser.Input.Keyboard.JustDown(keySPACE)){
+                this.DoubleJump += 1
+            }
+            if (this.DoubleJump < 2 && Phaser.Input.Keyboard.DownDuration(keySPACE, 250)){
+                this.player.body.setGravityY(0)
                 this.player.body.velocity.y = -650
+                this.player.body.setGravityY(2000)
             }
             // player transform
             if (this.player.y < this.game.config.height- this.game.config.height/4){
@@ -171,8 +170,8 @@ class Play extends Phaser.Scene {
             this.cross.setVelocity(speed, 0)
             // warp cross from left to right
             if (this.cross.x <= 0 - this.cross.width){
-                this.cross.x = game.config.width + this.cross.width / 2
-                this.cross.y = Phaser.Math.Between(this.cross.height / 2 , game.config.height - this.cross.height / 2)
+                this.cross.x = game.config.width + this.cross.width * 7
+                this.cross.y = Phaser.Math.Between(this.cross.height * 7 , game.config.height - this.cross.height * 7)
             }
         }else{
             if (Phaser.Input.Keyboard.JustDown(keyR)){

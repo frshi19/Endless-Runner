@@ -11,9 +11,15 @@ class Play extends Phaser.Scene {
         this.load.image('background', './assets/background.png');
 
         this.load.atlas('vampire', './assets/vampire.png', './assets/vampire.json');
+        this.load.image('cross', './assets/cross.png')
     }
 
     create(){
+        // game over flag
+        this.gameOver = false;
+        //reset speed
+        speed = -500;
+
         // place tile sprite
         this.lightning = this.add.sprite(0,0, 'lightning').setScale(4)
         this.background = this.add.tileSprite(0, 0, 1280, 720, 'background').setScale(2)
@@ -47,6 +53,10 @@ class Play extends Phaser.Scene {
         this.player.setGravityY(2000)
         this.player.setCollideWorldBounds(true)
 
+        // enemies
+        this.cross = this.physics.add.sprite(game.config.width, game.config.height/2, 'cross').setScale(7);
+
+
 
         // Lightning effect
         this.anims.create({
@@ -68,23 +78,67 @@ class Play extends Phaser.Scene {
         });
 
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+        // increase difficulty
+        this.time.addEvent({
+            delay: 5000, 
+            callback: () => {
+                if(!this.gameOver){
+                    speed -= 50;
+                }
+            },
+            callbackScope:this,
+            loop: true
+        });
+
+        // score config
+        let gameOverConfig = {
+            fontFamily: 'consolas',
+            fontSize: '48px',
+            backgroundColor: '#F3B141',
+            color: '#843605',
+            align: 'center',
+            padding: {
+                top: 5,
+                bottom: 5,
+            },
+        }
+
+        // collider
+        this.physics.add.collider(this.player, this.cross, (player, cross)=> {
+            player.destroy()
+            cross.destroy()
+            this.gameOver = true
+            //this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', gameOverConfig).setOrigin(0.5);
+            //this.add.text(game.config.width/2, game.config.height/2 + 72, 'Press (R) to Restart or (ESC) for Menu', gameOverConfig).setOrigin(0.5);
+        })
     }
 
     update(){
-        this.background.tilePositionX += 2;
-
-
-        // jump
-        if (Phaser.Input.Keyboard.DownDuration(keySPACE, 1000)){
-            this.player.body.velocity.y = -650
+        
+        if(!this.gameOver){
+            // jump
+            if (Phaser.Input.Keyboard.DownDuration(keySPACE, 1000)){
+                this.player.body.velocity.y = -650
+            }
+            // player transform
+            if (this.player.y < this.game.config.height- this.game.config.height/4){
+                this.player.anims.play('fly', true)
+                this.player.body.setSize(16,9)
+            }else{
+                this.player.anims.play('walk', true)
+                this.player.body.setSize(12,32)
+            }
+            // background
+            this.background.tilePositionX += 1.5;
+            // cross
+            this.cross.setVelocity(speed, 0)
+            // warp cross from left to right
+            if (this.cross.x <= 0 - this.cross.width){
+                this.cross.x = game.config.width + this.cross.width / 2
+                this.cross.y = Phaser.Math.Between(this.cross.height / 2 , game.config.height - this.cross.height / 2)
+            }
         }
-        // player transform
-        if (this.player.y < this.game.config.height- this.game.config.height/4){
-            this.player.anims.play('fly', true)
-            this.player.body.setSize(16,16)
-        }else{
-            this.player.anims.play('walk', true)
-            this.player.body.setSize(16,32)
-        }
+        
     }
 }

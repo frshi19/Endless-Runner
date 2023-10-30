@@ -17,12 +17,43 @@ class Play extends Phaser.Scene {
     create(){
         // game over flag
         this.gameOver = false;
+
+        
+
         //reset speed
         speed = -500;
 
         // place tile sprite
         this.lightning = this.add.sprite(0,0, 'lightning').setScale(4)
         this.background = this.add.tileSprite(0, 0, 1280, 720, 'background').setScale(2)
+
+        // time
+        this.timer = 0
+        let timerConfig = {
+            fontFamily: 'consolas',
+            fontSize: '28px',
+            backgroundColor: '#FFFFFF',
+            color: '#000000',
+            align: 'left',
+            padding: {
+                top: 5,
+                bottom: 5,
+            },
+            fixedWidth: 100
+        }
+        this.timerRight = this.add.text(0, 0, this.timer / 1000, timerConfig);
+        // increase timer
+        this.time.addEvent({
+            delay: 1000, 
+            callback: () => {
+                if(!this.gameOver){
+                    this.timer += 1000,
+                    this.timerRight.text = this.timer / 1000
+                }
+            },
+            callbackScope:this,
+            loop: true
+        });
         
         // player 
         this.player = this.physics.add.sprite(game.config.width / 5, game.config.height - this.game.config.height / 4, 'vampire', 'vampire 0.aseprite').setScale(7).setOrigin(0.5)
@@ -113,7 +144,8 @@ class Play extends Phaser.Scene {
             player.destroy()
             cross.destroy()
             this.gameOver = true
-            this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', gameOverConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2 - 72, 'GAME OVER', gameOverConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2, 'Time survived: ' + this.timer/1000 + ' seconds', gameOverConfig).setOrigin(0.5);
             this.add.text(game.config.width/2, game.config.height/2 + 72, 'Press (R) to Restart or (ESC) for Menu', gameOverConfig).setOrigin(0.5);
         })
     }

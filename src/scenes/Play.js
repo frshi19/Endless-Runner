@@ -92,9 +92,17 @@ class Play extends Phaser.Scene {
         this.player.setImmovable(true)
 
         // enemies
-        this.cross = this.physics.add.sprite(game.config.width + 150, game.config.height/2, 'cross').setScale(7).setOrigin(0.5);
+        this.cross = this.physics.add.sprite(game.config.width + 150, game.config.height/4  *  3, 'cross').setScale(7).setOrigin(0.5);
         this.cross.body.setSize(16,9)
         this.cross.setImmovable(true)
+
+
+        this.crossH = this.physics.add.sprite(game.config.width + 150, game.config.height/4, 'cross').setScale(7).setOrigin(0.5);
+        this.crossH.body.setSize(16,9)
+        this.crossH.setImmovable(true)
+        this.time.delayedCall(40000, () => {
+            this.crossH.setVelocity(-750, 0)
+        }, null, this);
 
 
 
@@ -129,7 +137,7 @@ class Play extends Phaser.Scene {
 
         this.anims.create({
             key: 'garlic',
-            frameRate: 1,
+            frameRate: 8,
             repeat: -1,
             frames: this.anims.generateFrameNumbers('garlic', {
                 start: 0,
@@ -200,6 +208,21 @@ class Play extends Phaser.Scene {
             
         })
 
+        this.physics.add.collider(this.player, this.crossH, (player, crossH)=> {
+            if (this.bloodflag){
+                this.bloodflag = false
+                crossH.x = -69
+            }else{
+                player.destroy()
+                crossH.destroy()
+                this.gameOver = true
+                this.add.text(game.config.width/2, game.config.height/2 - 72, 'GAME OVER', gameOverConfig).setOrigin(0.5);
+                this.add.text(game.config.width/2, game.config.height/2, 'Time survived: ' + this.timer/1000 + ' seconds', gameOverConfig).setOrigin(0.5);
+                this.add.text(game.config.width/2, game.config.height/2 + 72, 'Press (R) to Restart or (ESC) for Menu', gameOverConfig).setOrigin(0.5);
+            }
+            
+        })
+
         this.physics.add.collider(this.player, this.garlic, (player, garlic)=> {
             if (this.bloodflag){
                 this.bloodflag = false
@@ -260,13 +283,13 @@ class Play extends Phaser.Scene {
             if (Phaser.Input.Keyboard.JustDown(keySPACE)){
                 this.DoubleJump += 1
             }
-            if (this.DoubleJump < 2 && Phaser.Input.Keyboard.DownDuration(keySPACE, 250)){
+            if (this.DoubleJump < 2 && Phaser.Input.Keyboard.DownDuration(keySPACE, 300)){
                 this.player.body.setGravityY(0)
                 this.player.body.velocity.y = -650
                 this.player.body.setGravityY(2000)
             }
             // player transform
-            if (this.player.y < this.game.config.height- this.game.config.height/4){
+            if (this.player.y < this.game.config.height- this.game.config.height/4 + 68){
                 this.player.anims.play('fly', true)
                 this.player.body.setSize(16,9)
             }else{
@@ -280,8 +303,16 @@ class Play extends Phaser.Scene {
             // warp cross from left to right
             if (this.cross.x <= 0 - this.cross.width){
                 this.cross.x = game.config.width + this.cross.width * 7
-                this.cross.y = Phaser.Math.Between(game.config.height / 3 + this.cross.height * 7 , game.config.height - this.cross.height * 7)
+                this.cross.y = Phaser.Math.Between(game.config.height / 4 + this.cross.height * 7 , game.config.height - this.cross.height * 7)
             }
+
+            // crossH
+            // warp crossH from left to right
+            if (this.crossH.x <= 0 - this.crossH.width){
+                this.crossH.x = game.config.width + this.crossH.width * 7
+                this.crossH.y = Phaser.Math.Between(this.crossH.height * 7 , game.config.height / 2 - this.crossH.height * 7)
+            }
+
             // garlic
             // warp garlic from left to right
             if (this.garlic.x <= 0 - this.garlic.width){

@@ -243,7 +243,7 @@ class Play extends Phaser.Scene {
                 this.sound.play('sfx_death')
                 this.death.x = player.x
                 this.death.y = player.y
-                this.death.anims.play('death', true)
+                this.death.anims.play('death')
                 this.blood.destroy()
                 player.destroy()
                 cross.destroy()
@@ -264,7 +264,9 @@ class Play extends Phaser.Scene {
                 this.sound.play('sfx_break')
             }else{
                 this.sound.play('sfx_death')
-                this.death.anims.play('death', true)
+                this.death.x = player.x
+                this.death.y = player.y
+                this.death.anims.play('death')
                 player.destroy()
                 crossH.destroy()
                 this.garlic.destroy()
@@ -285,7 +287,9 @@ class Play extends Phaser.Scene {
                 this.sound.play('sfx_break')
             }else{
                 this.sound.play('sfx_death')
-                this.death.anims.play('death', true)
+                this.death.x = player.x
+                this.death.y = player.y
+                this.death.anims.play('death')
                 player.destroy()
                 garlic.destroy()
                 this.crossH.destroy()

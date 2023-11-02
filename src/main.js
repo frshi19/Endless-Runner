@@ -21,13 +21,13 @@ let config = {
     scale: {
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
-    scene: [ Menu, Play ]
+    scene: [ Menu, Credits, Play ]
 }
 
 let game = new Phaser.Game(config);
 
 // reserve keyboard vars
-let keySPACE, keyR, keyESC
+let keySPACE, keyC, keyR, keyESC
 
 // speed
 let speed = -500

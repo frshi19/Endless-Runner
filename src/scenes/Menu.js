@@ -34,14 +34,23 @@ class Menu extends Phaser.Scene {
         this.add.text(game.config.width/2, game.config.height/2, 'Hold/Tap \'SPACE\' to Jump', menuConfig).setOrigin(0.5);
         this.add.text(game.config.width/2, game.config.height/2 + 128, 'Jump again to perform\na Double Jump', menuConfig).setOrigin(0.5);
 
+        menuConfig.fontSize = '32px'
+        this.add.text(0 + 200, game.config.height - 72, "\'SPACE\' - Play", menuConfig).setOrigin(0.5);
+        this.add.text(game.config.width - 200, game.config.height - 72, "\'C\' - Credits", menuConfig).setOrigin(0.5);
+
         // define keys
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        keyC = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);
     }
     
     update(){
         if (Phaser.Input.Keyboard.JustDown(keySPACE)) {
-            this.sound.play('sfx_click')
+            this.sound.play('sfx_click');
             this.scene.start('playScene');    
+        }
+        if (Phaser.Input.Keyboard.JustDown(keyC)) {
+            this.sound.play('sfx_click');
+            this.scene.start('creditsScene');
         }
     }
 }

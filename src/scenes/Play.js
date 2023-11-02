@@ -28,6 +28,15 @@ class Play extends Phaser.Scene {
         // game over flag
         this.gameOver = false;
 
+        // play music
+        let bgmConfig = {
+            volume: 0.5,
+            loop: true
+        }
+
+        this.bgm = this.sound.add('bgm', bgmConfig);
+        this.bgm.play()
+
         //reset speed
         speed = -500;
 
@@ -195,7 +204,7 @@ class Play extends Phaser.Scene {
                 if(!this.gameOver){
                     this.blood.x = game.config.width + this.blood.width * 5
                     this.blood.y = Phaser.Math.Between(this.blood.height * 5 * 2, game.config.height - this.blood.height * 5)
-                    this.blood.body.velocity.x = speed
+                    this.blood.body.velocity.x = speed - 50
                 }
             },
             callbackScope:this,
@@ -229,13 +238,17 @@ class Play extends Phaser.Scene {
             if (this.bloodflag){
                 this.bloodflag = false
                 cross.x = -69
+                this.sound.play('sfx_break')
             }else{
+                this.sound.play('sfx_death')
                 this.death.x = player.x
                 this.death.y = player.y
                 this.death.anims.play('death', true)
                 this.blood.destroy()
                 player.destroy()
                 cross.destroy()
+                this.crossH.destroy()
+                this.garlic.destroy()
                 this.gameOver = true
                 this.add.text(game.config.width/2, game.config.height/2 - 72, 'GAME OVER', gameOverConfig).setOrigin(0.5);
                 this.add.text(game.config.width/2, game.config.height/2, 'Time survived: ' + this.timer/1000 + ' seconds', gameOverConfig).setOrigin(0.5);
@@ -248,9 +261,14 @@ class Play extends Phaser.Scene {
             if (this.bloodflag){
                 this.bloodflag = false
                 crossH.x = -69
+                this.sound.play('sfx_break')
             }else{
+                this.sound.play('sfx_death')
                 player.destroy()
                 crossH.destroy()
+                this.garlic.destroy()
+                this.cross.destroy()
+                this.death.anims.play('death', true)
                 this.blood.destroy()
                 this.gameOver = true
                 this.add.text(game.config.width/2, game.config.height/2 - 72, 'GAME OVER', gameOverConfig).setOrigin(0.5);
@@ -264,9 +282,14 @@ class Play extends Phaser.Scene {
             if (this.bloodflag){
                 this.bloodflag = false
                 garlic.x = -69
+                this.sound.play('sfx_break')
             }else{
+                this.sound.play('sfx_death')
                 player.destroy()
                 garlic.destroy()
+                this.crossH.destroy()
+                this.cross.destroy()
+                this.death.anims.play('death', true)
                 this.blood.destroy()
                 this.gameOver = true
                 this.add.text(game.config.width/2, game.config.height/2 - 72, 'GAME OVER', gameOverConfig).setOrigin(0.5);
@@ -283,6 +306,7 @@ class Play extends Phaser.Scene {
             blood.y = -420
             this.blood.setVelocity(0)
             this.bloodflag = true;
+            this.sound.play('sfx_powerUp')
         })
     }
 
@@ -320,11 +344,14 @@ class Play extends Phaser.Scene {
             // jump
             if (Phaser.Input.Keyboard.JustDown(keySPACE)){
                 this.DoubleJump += 1
+
+                if (this.DoubleJump < 2){
+                    this.sound.play('sfx_jump')
+                }
             }
             if (this.DoubleJump < 2 && Phaser.Input.Keyboard.DownDuration(keySPACE, 300)){
-                this.player.body.setGravityY(0)
                 this.player.body.velocity.y = -650
-                this.player.body.setGravityY(2000)
+                
             }
             // player transform
             if (this.player.y < this.game.config.height- this.game.config.height/4 + 68){
@@ -369,6 +396,8 @@ class Play extends Phaser.Scene {
                 this.anims.remove('garlic');
                 this.anims.remove('death');
                 this.textures.remove('vampire 0.aseprite')
+                this.bgm.stop();
+                this.sound.play('sfx_click')
                 this.scene.restart();
             }
             else if (Phaser.Input.Keyboard.JustDown(keyESC)){
@@ -378,6 +407,8 @@ class Play extends Phaser.Scene {
                 this.anims.remove('garlic');
                 this.anims.remove('death');
                 this.textures.remove('vampire 0.aseprite')
+                this.bgm.stop();
+                this.sound.play('sfx_click')
                 this.scene.start('menuScene');
             }
         }

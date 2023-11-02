@@ -18,13 +18,15 @@ class Play extends Phaser.Scene {
             frameWidth: 64,
             frameHeight: 64
         })
+        this.load.spritesheet('death', './assets/death.png', {
+            frameWidth: 32,
+            frameHeight: 32
+        })
     }
 
     create(){
         // game over flag
         this.gameOver = false;
-
-        
 
         //reset speed
         speed = -500;
@@ -45,16 +47,25 @@ class Play extends Phaser.Scene {
                 top: 5,
                 bottom: 5,
             },
-            fixedWidth: 100
         }
-        this.timerRight = this.add.text(0, 0, this.timer / 1000, timerConfig);
+
+        timerConfig.fixedWidth = 100
+        this.add.text(0, 0, 'Time', timerConfig);
+
+        this.timerLeft = this.add.text(0, 28, this.timer / 1000, timerConfig);
+
+        this.difficulty = 0
+        this.add.text(game.config.width - 100, 0, 'Level', timerConfig);
+        this.level = this.add.text(game.config.width - 100, 28, this.difficulty, timerConfig)
+
+        
         // increase timer
         this.time.addEvent({
             delay: 1000, 
             callback: () => {
                 if(!this.gameOver){
                     this.timer += 1000,
-                    this.timerRight.text = this.timer / 1000
+                    this.timerLeft.text = this.timer / 1000
                 }
             },
             callbackScope:this,
@@ -93,15 +104,17 @@ class Play extends Phaser.Scene {
 
         // enemies
         this.cross = this.physics.add.sprite(game.config.width + 150, game.config.height/4  *  3, 'cross').setScale(7).setOrigin(0.5);
-        this.cross.body.setSize(16,9)
+        this.cross.body.setSize(16,5)
         this.cross.setImmovable(true)
 
 
         this.crossH = this.physics.add.sprite(game.config.width + 150, game.config.height/4, 'cross').setScale(7).setOrigin(0.5);
-        this.crossH.body.setSize(16,9)
+        this.crossH.body.setSize(16,5)
         this.crossH.setImmovable(true)
         this.time.delayedCall(40000, () => {
-            this.crossH.setVelocity(-750, 0)
+            if(!this.gameOver){
+                this.crossH.setVelocity(-750, 0)
+            }
         }, null, this);
 
 
@@ -121,7 +134,10 @@ class Play extends Phaser.Scene {
             callback: () => {
                 if(!this.gameOver){
                     this.lightning.anims.play('flash', false)
-                    speed -= 75
+                    speed -= 50
+                    this.sound.play('sfx_thunder');
+                    this.difficulty++
+                    this.level.text = this.difficulty
                 }
             },
             callbackScope:this,
@@ -132,7 +148,9 @@ class Play extends Phaser.Scene {
         this.garlic = this.physics.add.sprite( game.config.width + 100, game.config.height/2, 'garlic').setOrigin(0.5).setScale(3)
 
         this.time.delayedCall(20000, () => {
-            this.garlic.setVelocity(-550, 0)
+            if(!this.gameOver){
+                this.garlic.setVelocity(-550, 0)
+            }
         }, null, this);
 
         this.anims.create({
@@ -146,15 +164,29 @@ class Play extends Phaser.Scene {
         })
         this.garlic.anims.play('garlic', true)
         this.garlic.setImmovable(true)
+
+        this.death = this.add.sprite( game.config.width + 100, game.config.height/2, 'death').setOrigin(0.5).setScale(6)
+        // death anim
+        this.anims.create({
+            key: 'death',
+            frameRate: 12,
+            repeat: 0,
+            frames: this.anims.generateFrameNumbers('death', {
+                start: 0,
+                end: 7
+            })
+        })
         
 
         // add blood every 30 seconds
         this.blood = this.physics.add.sprite(game.config.width + 150, game.config.height/2, 'blood').setScale(5).setOrigin(0.5);
         this.blood.body.setSize(16,9);
-        this.time.delayedCall(2000, () => {
-            this.blood.x = game.config.width + this.blood.width * 5
-            this.blood.y = Phaser.Math.Between(this.blood.height * 5 * 2, game.config.height - this.blood.height * 5)
-            this.blood.body.velocity.x = speed
+        this.time.delayedCall(500, () => {
+            if (!this.gameOver){
+                this.blood.x = game.config.width + this.blood.width * 5
+                this.blood.y = game.config.height / 2
+                this.blood.body.velocity.x = -600
+            }
         }, null, this);
         
         this.time.addEvent({
@@ -198,6 +230,10 @@ class Play extends Phaser.Scene {
                 this.bloodflag = false
                 cross.x = -69
             }else{
+                this.death.x = player.x
+                this.death.y = player.y
+                this.death.anims.play('death', true)
+                this.blood.destroy()
                 player.destroy()
                 cross.destroy()
                 this.gameOver = true
@@ -215,6 +251,7 @@ class Play extends Phaser.Scene {
             }else{
                 player.destroy()
                 crossH.destroy()
+                this.blood.destroy()
                 this.gameOver = true
                 this.add.text(game.config.width/2, game.config.height/2 - 72, 'GAME OVER', gameOverConfig).setOrigin(0.5);
                 this.add.text(game.config.width/2, game.config.height/2, 'Time survived: ' + this.timer/1000 + ' seconds', gameOverConfig).setOrigin(0.5);
@@ -230,6 +267,7 @@ class Play extends Phaser.Scene {
             }else{
                 player.destroy()
                 garlic.destroy()
+                this.blood.destroy()
                 this.gameOver = true
                 this.add.text(game.config.width/2, game.config.height/2 - 72, 'GAME OVER', gameOverConfig).setOrigin(0.5);
                 this.add.text(game.config.width/2, game.config.height/2, 'Time survived: ' + this.timer/1000 + ' seconds', gameOverConfig).setOrigin(0.5);
@@ -328,6 +366,8 @@ class Play extends Phaser.Scene {
                 this.anims.remove('walk');
                 this.anims.remove('fly');
                 this.anims.remove('flash');
+                this.anims.remove('garlic');
+                this.anims.remove('death');
                 this.textures.remove('vampire 0.aseprite')
                 this.scene.restart();
             }
@@ -335,6 +375,8 @@ class Play extends Phaser.Scene {
                 this.anims.remove('walk');
                 this.anims.remove('fly');
                 this.anims.remove('flash');
+                this.anims.remove('garlic');
+                this.anims.remove('death');
                 this.textures.remove('vampire 0.aseprite')
                 this.scene.start('menuScene');
             }

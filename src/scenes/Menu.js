@@ -4,7 +4,7 @@ class Menu extends Phaser.Scene {
     }
 
     preload(){
-        
+        this.load.audio('sfx_thunder', './assets/lightningstrike.wav')
     }
 
     create(){
@@ -23,7 +23,8 @@ class Menu extends Phaser.Scene {
         }
 
         // show menu text
-        this.add.text(game.config.width/2, game.config.height/2, 'Tap/Hold \'SPACE\' to Jump\nor Double Jump', menuConfig).setOrigin(0.5);
+        this.add.text(game.config.width/2, game.config.height/2 - 72, 'Hold/Tap \'SPACE\' to Jump', menuConfig).setOrigin(0.5);
+        this.add.text(game.config.width/2, game.config.height/2 + 72, 'Jump again to perform\na Double Jump', menuConfig).setOrigin(0.5);
 
         // define keys
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);

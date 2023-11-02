@@ -264,11 +264,11 @@ class Play extends Phaser.Scene {
                 this.sound.play('sfx_break')
             }else{
                 this.sound.play('sfx_death')
+                this.death.anims.play('death', true)
                 player.destroy()
                 crossH.destroy()
                 this.garlic.destroy()
                 this.cross.destroy()
-                this.death.anims.play('death', true)
                 this.blood.destroy()
                 this.gameOver = true
                 this.add.text(game.config.width/2, game.config.height/2 - 72, 'GAME OVER', gameOverConfig).setOrigin(0.5);
@@ -285,11 +285,11 @@ class Play extends Phaser.Scene {
                 this.sound.play('sfx_break')
             }else{
                 this.sound.play('sfx_death')
+                this.death.anims.play('death', true)
                 player.destroy()
                 garlic.destroy()
                 this.crossH.destroy()
                 this.cross.destroy()
-                this.death.anims.play('death', true)
                 this.blood.destroy()
                 this.gameOver = true
                 this.add.text(game.config.width/2, game.config.height/2 - 72, 'GAME OVER', gameOverConfig).setOrigin(0.5);

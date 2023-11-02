@@ -49,23 +49,23 @@ class Play extends Phaser.Scene {
         let timerConfig = {
             fontFamily: 'consolas',
             fontSize: '28px',
-            backgroundColor: '#FFFFFF',
-            color: '#000000',
-            align: 'left',
+            backgroundColor: '#990077',
+            color: '#FFFFFF',
+            align: 'center',
             padding: {
                 top: 5,
                 bottom: 5,
             },
+            fixedWidth: 100
         }
 
-        timerConfig.fixedWidth = 100
-        this.add.text(0, 0, 'Time', timerConfig);
+        this.add.text(50, 20, 'Time', timerConfig);
 
-        this.timerLeft = this.add.text(0, 28, this.timer / 1000, timerConfig);
+        this.timerLeft = this.add.text(50, 50, this.timer / 1000, timerConfig);
 
         this.difficulty = 0
-        this.add.text(game.config.width - 100, 0, 'Level', timerConfig);
-        this.level = this.add.text(game.config.width - 100, 28, this.difficulty, timerConfig)
+        this.add.text(game.config.width - 150, 20, 'Level', timerConfig);
+        this.level = this.add.text(game.config.width - 150, 50, this.difficulty, timerConfig)
 
         
         // increase timer
@@ -222,8 +222,8 @@ class Play extends Phaser.Scene {
         let gameOverConfig = {
             fontFamily: 'consolas',
             fontSize: '48px',
-            backgroundColor: '#FFFFFF',
-            color: '#000000',
+            backgroundColor: '#000000',
+            color: '#AA22FF',
             align: 'center',
             padding: {
                 top: 5,

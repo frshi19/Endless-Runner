@@ -17,8 +17,8 @@ class Menu extends Phaser.Scene {
         let menuConfig = {
             fontFamily: 'consolas',
             fontSize: '128px',
-            backgroundColor: '#FFFFFF',
-            color: '#000000',
+            backgroundColor: '#000000',
+            color: '#AA22FF',
             align: 'center',
             padding: {
                 top: 5,
@@ -29,7 +29,7 @@ class Menu extends Phaser.Scene {
         }
 
         // show menu text
-        this.add.text(game.config.width/2, game.config.height/2 - 192, 'Game Title Here', menuConfig).setOrigin(0.5);
+        this.add.text(game.config.width/2, game.config.height/2 - 192, 'Manor Run', menuConfig).setOrigin(0.5);
         menuConfig.fontSize = '64px'
         this.add.text(game.config.width/2, game.config.height/2, 'Hold/Tap \'SPACE\' to Jump', menuConfig).setOrigin(0.5);
         this.add.text(game.config.width/2, game.config.height/2 + 128, 'Jump again to perform\na Double Jump', menuConfig).setOrigin(0.5);
